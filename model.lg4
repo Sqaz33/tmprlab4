@@ -1,0 +1,31 @@
+MODEL:
+
+SETS:
+    SOURCES /A1, A2, A3/: supply;
+    DESTINATIONS /B1, B2, B3, B4, B5/: demand;
+    LINKS(SOURCES, DESTINATIONS): cost, x;
+ENDSETS
+
+DATA:
+    supply = 200 250 160;
+    demand = 120 120 100 210 60;
+    cost = 10 15 16 12 20
+           21  9 10  9  7
+           12 15 16 13 21;
+ENDDATA
+
+! Целевая функция: минимизация стоимости перевозок;
+MIN = @SUM(LINKS(i,j): cost(i,j) * x(i,j));
+
+! Ограничения по запасам;
+@FOR(SOURCES(i): 
+    @SUM(DESTINATIONS(j): x(i,j)) = supply(i));
+
+! Ограничения по потребностям;
+@FOR(DESTINATIONS(j): 
+    @SUM(SOURCES(i): x(i,j)) = demand(j));
+
+! Неотрицательность переменных;
+@FOR(LINKS(i,j): x(i,j) >= 0);
+
+END
